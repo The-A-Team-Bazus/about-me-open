@@ -1,0 +1,1 @@
+Pull requests will require at least one peer review before merging the changes from the remote brach to main branch
