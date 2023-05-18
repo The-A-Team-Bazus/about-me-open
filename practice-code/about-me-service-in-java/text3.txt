@@ -1,0 +1,81 @@
+Certainly! Here are the updated code snippets and the modified pom.xml file:
+
+pom.xml:
+Update the pom.xml file with the required dependencies for Quarkus, Kafka, and Confluent Platform:
+xml
+Copy code
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Add Quarkus BOM -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>quarkus-kafka-biography</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <properties>
+        <quarkus.version>3.0.3.Final</quarkus.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <!-- Add Quarkus Kafka extension -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-kafka-client</artifactId>
+        </dependency>
+        <!-- Add Confluent Kafka dependencies -->
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>6.2.1</version>
+        </dependency>
+    </dependencies>
+</project>
+Make sure to replace com.example with your desired package name.
+
+KafkaTopicSetup.java:
+Update the KafkaTopicSetup class to include the code for setting up the Kafka topic with four partitions:
+java
+Copy code
+import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.NewTopic;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Properties;
+
+@ApplicationScoped
+@RegisterForReflection // Required for reflection in Quarkus
+public class KafkaTopicSetup {
+
+    @Inject
+    AdminClient adminClient;
+
+    public void setupTopic(@Observes StartupEvent event) throws Exception {
+        // Create a new topic with four partitions
+        NewTopic topic = new NewTopic("biography-topic", 4, (short) 1);
+        adminClient.createTopics(Collections.singleton(topic)).all().get();
+    }
+}
+In this updated code snippet, the setupTopic method is called during application startup using the @Observes annotation. It creates a new topic called "biography-topic" with four partitions and replication factor of 1.
+
+Make sure to import the necessary dependencies, including io.quarkus.runtime.StartupEvent, io.quarkus.runtime.annotations.RegisterForReflection, javax.enterprise.context.ApplicationScoped, and javax.inject.Inject.
+
+Remember to configure the Kafka connection properties in the application.properties file according to your local Kafka setup.
+
+Please note that the above code snippets are provided as examples and may require further adjustments based on your specific application needs. Consult the official Quarkus and Confluent documentation for detailed instructions and best practices.

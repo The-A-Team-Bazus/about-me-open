@@ -1,0 +1,81 @@
+Certainly! Let's rewrite the code snippets while providing detailed explanations and citing the official documentation of the chosen tech stacks. We'll focus on setting up the Kafka topic using the Confluent Platform APIs.
+
+Step 1: Add the necessary dependencies
+
+In your Quarkus project's pom.xml file, you need to include the dependencies for the Confluent Platform APIs. Here are the dependencies along with their versions:
+
+xml
+Copy code
+<dependency>
+    <groupId>io.confluent.kafka</groupId>
+    <artifactId>kafka-schema-registry-client</artifactId>
+    <version>${confluent.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.confluent.kafka</groupId>
+    <artifactId>kafka-avro-serializer</artifactId>
+    <version>${confluent.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.confluent.kafka</groupId>
+    <artifactId>kafka-streams-avro-serde</artifactId>
+    <version>${confluent.version}</version>
+</dependency>
+Make sure to replace ${confluent.version} with the appropriate version of the Confluent Platform libraries you are using. You can find the available versions and their documentation in the Confluent Platform documentation: Confluent Platform Documentation - Clients
+
+Step 2: Create a class for Kafka topic setup
+
+Create a new class, for example KafkaTopicSetup, in your Quarkus project. This class will handle the topic setup logic using the Confluent Platform APIs. Here's an example implementation:
+
+java
+Copy code
+import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.NewTopic;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import java.util.Properties;
+
+@ApplicationScoped
+public class KafkaTopicSetup {
+
+    @Inject
+    QuarkusApplicationConfig applicationConfig;
+
+    public void createTopic() {
+        Properties config = new Properties();
+        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, applicationConfig.getKafkaBootstrapServers());
+
+        try (AdminClient adminClient = AdminClient.create(config)) {
+            NewTopic topic = new NewTopic("biography-topic", 1, (short) 1);
+            adminClient.createTopics(Collections.singletonList(topic));
+        }
+    }
+}
+In this example, we inject the QuarkusApplicationConfig to get the Kafka bootstrap servers' configuration. The createTopic() method uses the AdminClient from the Kafka clients to create a new topic called "biography-topic" with one partition and a replication factor of one.
+
+Step 3: Call the topic setup method
+
+In your Quarkus application's entry point or a suitable initialization method, you can call the createTopic() method of the KafkaTopicSetup class to create the Kafka topic. For example:
+
+java
+Copy code
+import io.quarkus.runtime.StartupEvent;
+
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+public class ApplicationStartup {
+
+    @Inject
+    KafkaTopicSetup kafkaTopicSetup;
+
+    void onStart(@Observes StartupEvent event) {
+        kafkaTopicSetup.createTopic();
+    }
+}
+This code snippet demonstrates using a startup event to call the createTopic() method during application startup.
+
+Remember to configure the appropriate Kafka bootstrap servers and other necessary properties in your QuarkusApplicationConfig. You can refer to the official documentation of Quarkus for configuration options and best practices: [Quarkus - Configuration](https://quark
