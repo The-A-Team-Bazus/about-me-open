@@ -1,2 +1,2 @@
 # about-me
-# designing an simple bio 
+# designing an simple event streaming bio application
