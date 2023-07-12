@@ -1,0 +1,3 @@
+[submodule "practice-code/ui-ux/appV2/patternfly-react-seed"]
+	path = practice-code/ui-ux/appV2/patternfly-react-seed
+	url = git@github.com:patternfly/patternfly-react-seed.git
