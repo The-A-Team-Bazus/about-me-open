@@ -1,9 +1,9 @@
-package org.acme.consumer;
+package org.acme.kafka.consumer;
 
 import java.util.UUID;
 
 import jakarta.enterprise.context.AppicationScoped;
-import jakart.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.reactivestreams.Publisher;
